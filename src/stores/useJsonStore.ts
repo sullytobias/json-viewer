@@ -1,13 +1,34 @@
-import { create } from 'zustand';
+import { Store } from '@tanstack/store';
+import { useSyncExternalStore } from 'react';
 
-export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
 
-interface JsonStore {
+type JsonStoreState = {
   json: JsonValue | null;
-  setJson: (json: JsonValue) => void;
-}
+};
 
-export const useJsonStore = create<JsonStore>((set) => ({
+const jsonStore = new Store<JsonStoreState>({
   json: null,
-  setJson: (json) => set({ json }),
-}));
+});
+
+export const useJson = () => {
+  const json = useSyncExternalStore(
+    jsonStore.subscribe,
+    () => jsonStore.state.json
+  );
+
+  const setJson = (newJson: JsonValue) => {
+    jsonStore.setState((prev) => ({
+      ...prev,
+      json: newJson,
+    }));
+  };
+
+  return { json, setJson };
+};

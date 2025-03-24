@@ -1,8 +1,8 @@
-import { useJsonStore } from '../stores/useJsonStore';
-import Node from './ Node';
+import { useJson } from '../stores/useJsonStore';
+import Node from './Node';
 
 export default function TreeView() {
-  const { json } = useJsonStore();
+  const { json } = useJson();
   if (!json) return null;
 
   return (
