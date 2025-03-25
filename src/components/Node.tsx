@@ -1,24 +1,11 @@
 import { useState } from 'react';
 import { JsonValue } from '../stores/useJsonStore';
+import { getValueColor } from '../utils/detectType';
 
 type NodeProps = {
   data: JsonValue;
   path: string;
   depth: number;
-};
-
-const getValueColor = (value: JsonValue): string => {
-  if (value === null) return 'text-pink-400';
-  switch (typeof value) {
-    case 'string':
-      return 'text-emerald-400';
-    case 'number':
-      return 'text-orange-400';
-    case 'boolean':
-      return 'text-purple-400';
-    default:
-      return 'text-white';
-  }
 };
 
 const handleCopy = (text: string) => navigator.clipboard.writeText(text).catch(console.error);
@@ -65,7 +52,7 @@ export default function Node({ data, path, depth }: NodeProps) {
     <div className="space-y-1" style={{ marginLeft: depth * 12 }}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-yellow-200 hover:text-yellow-100 focus:outline-none group"
+        className="flex cursor-pointer items-center gap-2 text-yellow-200 hover:text-yellow-100 focus:outline-none group"
       >
         <span
           className={`transform transition-transform duration-200 ${
