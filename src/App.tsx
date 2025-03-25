@@ -36,7 +36,7 @@ export default function App() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder='{"name": "Toto", "age": 42}'
-          className="w-full h-48 p-4 bg-gray-800 text-gray-100 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-inner"
+          className="w-full h-48 p-4 text-gray-100 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-inner"
         />
         {error ? (
           <p className="text-red-400 mt-2">{error}</p>

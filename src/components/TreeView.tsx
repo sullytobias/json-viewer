@@ -6,8 +6,8 @@ export default function TreeView() {
   if (!json) return null;
 
   return (
-    <div className="mt-6 bg-gray-800 p-4 rounded">
+    <div className="mt-6 p-4 rounded overflow-x-auto">
       <Node data={json} path="root" depth={0} />
     </div>
   );
-}
+} 
