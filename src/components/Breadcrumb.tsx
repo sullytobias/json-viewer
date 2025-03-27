@@ -21,8 +21,6 @@ export default function Breadcrumb() {
   return (
     <div className="max-w-4xl mx-auto mb-4 px-2 py-2 rounded bg-gray-900 border border-gray-800 shadow-sm text-sm font-mono text-gray-300 overflow-x-auto whitespace-nowrap">
       {parts.map((part, i) => {
-        console.log(part);
-        const label = part === "undefined" ? "root" : part;
         return (
           <span key={i} className="inline">
             {i > 0 && <span className="text-gray-600 mx-1">/</span>}
@@ -34,7 +32,7 @@ export default function Breadcrumb() {
                   : "text-gray-300"
               }`}
             >
-              {label}
+              {part}
             </button>
           </span>
         );

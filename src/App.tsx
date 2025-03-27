@@ -1,8 +1,7 @@
-// jsonhero-clone/src/App.tsx
 import { useState } from "react";
 import TreeView from "./components/TreeView";
 import { JsonValue, useJson } from "./stores/useJsonStore";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Breadcrumb from "./components/Breadcrumb";
 
 export default function App() {
@@ -37,48 +36,54 @@ export default function App() {
   const error = input.length > 0 && !isValidJson ? "⛔ JSON invalide" : null;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6 space-y-6">
-      <div className="flex justify-between items-center max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center flex-1">JSON Viewer</h1>
-        <button
-          onClick={() => setShowOnlyTree((prev) => !prev)}
-          className="ml-4 w-50 cursor-pointer text-sm bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded shadow"
-        >
-          {showOnlyTree ? "Back to Input" : "Focus TreeView"}
-        </button>
-      </div>
-      <AnimatePresence mode="wait">
-        <motion.div
-          layout
-          className="max-w-4xl mx-auto w-full"
-          transition={{ layout: { duration: 0.4, ease: "easeInOut" } }}
-        >
-          {!showOnlyTree && (
-            <motion.div
-              key="input-panel"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-            >
+    <div className="h-screen flex flex-col bg-gray-950 text-white overflow-hidden">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-gray-950 px-6 pt-6 pb-2 border-b border-gray-800 shadow-md">
+        <div className="flex justify-between items-center max-w-4xl mx-auto mb-4">
+          <h1 className="text-4xl font-bold text-center flex-1">JSON Viewer</h1>
+          <button
+            onClick={() => setShowOnlyTree((prev) => !prev)}
+            className="ml-4 cursor-pointer text-sm bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded shadow w-50"
+          >
+            {showOnlyTree ? "Back to Input" : "Focus TreeView"}
+          </button>
+        </div>
+        <Breadcrumb />
+      </header>
+
+      {/* Main Content */}
+      <motion.main
+        layout
+        className="flex-1 overflow-hidden flex flex-col bg-gray-950"
+      >
+        {!showOnlyTree && (
+          <motion.section
+            key="input-panel"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden mt-4 px-6 space-y-6 max-h-[30vh] min-h-[30vh] bg-gray-950 border-b border-gray-800"
+          >
+            <div className="max-w-4xl mx-auto">
+              {error ? (
+                <p className="text-red-400 mb-2">{error}</p>
+              ) : (
+                input.length > 0 && (
+                  <p className="text-green-400 mb-2">✅ Valid Format</p>
+                )
+              )}
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder='{"name": "Toto", "age": 42}'
-                className="w-full h-48 p-4 text-gray-100 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-inner"
+                className="w-full h-28 p-4 text-gray-100 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-inner"
               />
-              {error ? (
-                <p className="text-red-400 mt-2">{error}</p>
-              ) : (
-                input.length > 0 && (
-                  <p className="text-green-400 mt-2">✅ Valid Format</p>
-                )
-              )}
 
               <button
                 onClick={handleLoad}
                 disabled={loading}
-                className={`mt-4 px-6 py-2 rounded text-white font-semibold shadow-md ${
+                className={`mt-4 px-6 py-2 rounded text-white font-semibold shadow-md transition-colors duration-300 ${
                   loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
@@ -112,16 +117,18 @@ export default function App() {
                   "Load JSON"
                 )}
               </button>
-            </motion.div>
-          )}
+            </div>
+          </motion.section>
+        )}
 
-          <motion.div layout className="mt-6">
-            <Breadcrumb />
-
-            <TreeView />
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
+        <motion.section
+          layout
+          transition={{ duration: 0.2 }}
+          className="flex-1 overflow-auto px-6 pb-6"
+        >
+          <TreeView />
+        </motion.section>
+      </motion.main>
     </div>
   );
 }
