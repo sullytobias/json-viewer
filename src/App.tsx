@@ -23,7 +23,7 @@ export default function App() {
         setLoading(false);
       }, 500);
     } catch {
-      alert("JSON invalide");
+      alert("Invalid JSON");
       setLoading(false);
     }
   };
@@ -37,7 +37,30 @@ export default function App() {
     }
   })();
 
-  const error = input.length > 0 && !isValidJson ? "JSON invalide" : null;
+  const error = input.length > 0 && !isValidJson ? "Invalid JSON" : null;
+
+  const handleDrop = (e: React.DragEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === "application/json") {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        try {
+          const jsonContent = JSON.parse(reader.result as string);
+
+          setInput(JSON.stringify(jsonContent, null, 2));
+        } catch (error) {
+          alert(`Invalid JSON file : ${error}`);
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Please drop a valid JSON file.");
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gray-950 text-white overflow-hidden">
@@ -60,7 +83,7 @@ export default function App() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search JSON..."
-          className="w-full p-2 text-gray-900 bg-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 shadow-inner"
+          className="w-full p-2 text-white rounded-lg border border-gray-400 focus:outline-none focus:border-blue-500"
         />
       </motion.div>
 
@@ -89,7 +112,8 @@ export default function App() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder='{"name": "Toto", "age": 42}'
-                className="w-full h-28 p-4 text-gray-100 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-inner"
+                className="w-full h-28 p-4 text-gray-100 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:border-blue-500"
+                onDrop={handleDrop}
               />
 
               <button
