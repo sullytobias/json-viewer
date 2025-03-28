@@ -8,6 +8,7 @@ type NodeProps = {
   path: string;
   breadcrumbValue: string;
   depth: number;
+  searchTerm?: string;
 };
 
 export default function Node({
@@ -15,13 +16,27 @@ export default function Node({
   path,
   breadcrumbValue,
   depth,
+  searchTerm = "",
 }: NodeProps) {
   const [open, setOpen] = useState(true);
-
   const { setSelectedPath, highlightedPath } = useJson();
   const toast = useToast();
 
   const isObject = typeof data === "object" && data !== null;
+
+  const highlightMatch = (text: string) => {
+    if (!searchTerm) return text;
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+    return text.split(regex).map((part, index) =>
+      part.toLowerCase() === searchTerm.toLowerCase() ? (
+        <span key={index} className="bg-yellow-500 text-black px-1 rounded">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
 
   const handleCopy = (text: string, type: "path" | "value") => {
     navigator.clipboard.writeText(text).then(() => {
@@ -45,9 +60,9 @@ export default function Node({
         }`}
         onClick={() => setSelectedPath(breadcrumbValue)}
       >
-        <span className="text-gray-400 italic">{path}:</span>
+        <span className="text-gray-400 italic">{highlightMatch(path)}:</span>
         <span className={`${getValueColor(data)} font-mono`}>
-          {JSON.stringify(data)}
+          {highlightMatch(JSON.stringify(data))}
         </span>
 
         <button
@@ -105,7 +120,7 @@ export default function Node({
           ▶
         </span>
         <span className="text-sm font-semibold group-hover:underline">
-          {icon} {path}
+          {icon} {highlightMatch(path)}
         </span>
         <span className="text-xs text-white">
           ({isArray ? "Array" : "Object"}) [{itemCount}]
@@ -121,6 +136,7 @@ export default function Node({
               path={String(key)}
               breadcrumbValue={`${breadcrumbValue}.${key}`}
               depth={depth + 1}
+              searchTerm={searchTerm}
             />
           ))}
         </div>

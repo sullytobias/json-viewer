@@ -1,13 +1,17 @@
 import { Store } from "@tanstack/store";
 import { useSyncExternalStore } from "react";
 
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
+
 export type JsonValue =
   | string
   | number
   | boolean
   | null
   | JsonValue[]
-  | { [key: string]: JsonValue };
+  | JsonObject;
 
 interface JsonStoreState {
   json: JsonValue | null;

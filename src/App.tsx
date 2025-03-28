@@ -1,13 +1,17 @@
 import { useState } from "react";
-import TreeView from "./components/TreeView";
-import { JsonValue, useJson } from "./stores/useJsonStore";
 import { motion } from "framer-motion";
+
+import TreeView from "./components/TreeView";
 import Breadcrumb from "./components/Breadcrumb";
+
+import { JsonValue, useJson } from "./stores/useJsonStore";
 
 export default function App() {
   const [input, setInput] = useState<string>("");
   const [showOnlyTree, setShowOnlyTree] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
   const { setJson } = useJson();
 
   const handleLoad = () => {
@@ -19,7 +23,7 @@ export default function App() {
         setLoading(false);
       }, 500);
     } catch {
-      alert("⛔ JSON invalide");
+      alert("JSON invalide");
       setLoading(false);
     }
   };
@@ -33,11 +37,10 @@ export default function App() {
     }
   })();
 
-  const error = input.length > 0 && !isValidJson ? "⛔ JSON invalide" : null;
+  const error = input.length > 0 && !isValidJson ? "JSON invalide" : null;
 
   return (
     <div className="h-screen flex flex-col bg-gray-950 text-white overflow-hidden">
-      {/* Header */}
       <header className="sticky top-0 z-10 bg-gray-950 px-6 pt-6 pb-2 border-b border-gray-800 shadow-md">
         <div className="flex justify-between items-center max-w-4xl mx-auto mb-4">
           <h1 className="text-4xl font-bold text-center flex-1">JSON Viewer</h1>
@@ -51,7 +54,16 @@ export default function App() {
         <Breadcrumb />
       </header>
 
-      {/* Main Content */}
+      <motion.div layout transition={{ duration: 0.3 }} className="px-6 mt-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search JSON..."
+          className="w-full p-2 text-gray-900 bg-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 shadow-inner"
+        />
+      </motion.div>
+
       <motion.main
         layout
         className="flex-1 overflow-hidden flex flex-col bg-gray-950"
@@ -70,7 +82,7 @@ export default function App() {
                 <p className="text-red-400 mb-2">{error}</p>
               ) : (
                 input.length > 0 && (
-                  <p className="text-green-400 mb-2">✅ Valid Format</p>
+                  <p className="text-green-400 mb-2">Valid Format</p>
                 )
               )}
               <textarea
@@ -83,7 +95,7 @@ export default function App() {
               <button
                 onClick={handleLoad}
                 disabled={loading}
-                className={`mt-4 px-6 py-2 rounded text-white font-semibold shadow-md transition-colors duration-300 ${
+                className={`mt-4 px-6 cursor-pointer py-2 rounded text-white font-semibold shadow-md transition-colors duration-300 ${
                   loading
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
@@ -126,7 +138,7 @@ export default function App() {
           transition={{ duration: 0.2 }}
           className="flex-1 overflow-auto px-6 pb-6"
         >
-          <TreeView />
+          <TreeView searchQuery={searchQuery} />
         </motion.section>
       </motion.main>
     </div>
