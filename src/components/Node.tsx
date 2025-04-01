@@ -50,6 +50,36 @@ export default function Node({
   };
 
   if (!isObject) {
+    const type = typeof data;
+    const valueClass = getValueColor(data);
+    let displayValue: React.ReactNode;
+
+    if (data === null) {
+      displayValue = <span className={`${valueClass} italic`}>null</span>;
+    } else if (type === "boolean") {
+      displayValue = (
+        <span className={valueClass}>{String(data).toUpperCase()}</span>
+      );
+    } else if (type === "string") {
+      const isUrl =
+        typeof data === "string" && /^https?:\/\/[^\s]+$/.test(data);
+
+      displayValue = isUrl ? (
+        <a
+          href={data}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${valueClass} underline hover:text-blue-400 transition-colors`}
+        >
+          "{data}"
+        </a>
+      ) : (
+        <span className={valueClass}>"{data}"</span>
+      );
+    } else {
+      displayValue = <span className={valueClass}>{data}</span>;
+    }
+
     return (
       <div
         id={breadcrumbValue}
@@ -61,16 +91,14 @@ export default function Node({
         onClick={() => setSelectedPath(breadcrumbValue)}
       >
         <span className="text-gray-400 italic">{highlightMatch(path)}:</span>
-        <span className={`${getValueColor(data)} font-mono`}>
-          {highlightMatch(JSON.stringify(data))}
-        </span>
+        <span className="font-mono">{displayValue}</span>
 
         <button
           onClick={(e) => {
             e.stopPropagation();
             handleCopy(breadcrumbValue, "path");
           }}
-          className="text-xs relative cursor-pointer text-blue-400 opacity-0 group-hover:opacity-100 hover:underline"
+          className="text-xs text-blue-400 opacity-0 group-hover:opacity-100 hover:underline"
           title="Copy Path"
         >
           [📎 Path]
@@ -81,7 +109,7 @@ export default function Node({
             e.stopPropagation();
             handleCopy(JSON.stringify(data), "value");
           }}
-          className="text-xs relative cursor-pointer text-teal-400 opacity-0 group-hover:opacity-100 hover:underline"
+          className="text-xs text-teal-400 opacity-0 group-hover:opacity-100 hover:underline"
           title="Copy Value"
         >
           [📋 Value]
