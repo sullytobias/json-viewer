@@ -4,12 +4,14 @@ import TreeView from "./components/TreeView";
 import Breadcrumb from "./components/Breadcrumb";
 import { JsonValue, useJson } from "./stores/useJsonStore";
 import { useTheme } from "./hooks/useTheme";
+import { handleLoadFromUrl } from "./utils/handleLoadFromUrl";
 
 export default function App() {
   const [input, setInput] = useState<string>("");
   const [showOnlyTree, setShowOnlyTree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [urlInput, setUrlInput] = useState("");
 
   const { theme, toggleTheme } = useTheme();
   const { setJson } = useJson();
@@ -79,6 +81,26 @@ export default function App() {
           className="w-full p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
         />
       </motion.div>
+
+      <div className="max-w-4xl mx-auto mt-4 space-y-2">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://example.com/data.json"
+            className="w-full p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
+          />
+          <button
+            onClick={() =>
+              handleLoadFromUrl(urlInput, setLoading, setJson, setInput)
+            }
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
+          >
+            Load from URL
+          </button>
+        </div>
+      </div>
 
       <motion.main layout className="flex-1 overflow-hidden flex flex-col">
         {!showOnlyTree && (
