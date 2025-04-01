@@ -49,33 +49,55 @@ export default function Node({
     setSelectedPath(breadcrumbValue);
   };
 
+  const [expanded, setExpanded] = useState(false);
+  const MAX_LENGTH = 80;
+
   if (!isObject) {
-    const type = typeof data;
     const valueClass = getValueColor(data);
     let displayValue: React.ReactNode;
 
     if (data === null) {
       displayValue = <span className={`${valueClass} italic`}>null</span>;
-    } else if (type === "boolean") {
+    } else if (typeof data === "boolean") {
       displayValue = (
         <span className={valueClass}>{String(data).toUpperCase()}</span>
       );
-    } else if (type === "string") {
-      const isUrl =
-        typeof data === "string" && /^https?:\/\/[^\s]+$/.test(data);
+    } else if (typeof data === "string") {
+      const isUrl = /^https?:\/\/[^\s]+$/.test(data);
+      const isLong = data.length > MAX_LENGTH;
+      const shortText = `${data.slice(0, MAX_LENGTH)}...`;
 
-      displayValue = isUrl ? (
-        <a
-          href={data}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${valueClass} underline hover:text-blue-400 transition-colors`}
-        >
-          "{data}"
-        </a>
-      ) : (
-        <span className={valueClass}>"{data}"</span>
-      );
+      if (isUrl) {
+        displayValue = (
+          <a
+            href={data}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${valueClass} underline hover:text-blue-400 transition-colors`}
+          >
+            "{data}"
+          </a>
+        );
+      } else {
+        displayValue = (
+          <>
+            <span className={valueClass}>
+              "{expanded || !isLong ? data : shortText}"
+            </span>
+            {isLong && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((prev) => !prev);
+                }}
+                className="ml-2 cursor-pointer text-xs text-yellow-400 underline"
+              >
+                [{expanded ? "Show Less" : "Show More"}]
+              </button>
+            )}
+          </>
+        );
+      }
     } else {
       displayValue = <span className={valueClass}>{data}</span>;
     }
