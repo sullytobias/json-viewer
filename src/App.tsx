@@ -103,7 +103,7 @@ export default function App() {
             onClick={() =>
               handleLoadFromUrl(urlInput, setLoading, setJson, setInput)
             }
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
+            className="bg-indigo-600 w-80 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
           >
             Load from URL
           </button>
@@ -175,28 +175,27 @@ export default function App() {
           </motion.section>
         )}
 
-        {stats && (
-          <div className="max-w-4xl mx-auto text-sm text-gray-600 dark:text-gray-400 mt-4 space-x-4">
-            <span>
-              🧮 Total Keys: <strong>{stats.totalKeys}</strong>
-            </span>
-            <span>
-              📐 Max Depth: <strong>{stats.maxDepth}</strong>
-            </span>
-            <span>
-              📦 Objects: <strong>{stats.objectCount}</strong>
-            </span>
-            <span>
-              📚 Arrays: <strong>{stats.arrayCount}</strong>
-            </span>
-          </div>
-        )}
-
         <motion.section
           layout
           transition={{ duration: 0.2 }}
           className="flex-1 overflow-auto px-6 pb-6"
         >
+          {stats && (
+            <div className="max-w-4xl mx-auto text-center text-sm text-gray-600 dark:text-gray-400 mt-4 space-x-4">
+              <span>
+                🧮 Total Keys: <strong>{stats.totalKeys}</strong>
+              </span>
+              <span>
+                📐 Max Depth: <strong>{stats.maxDepth}</strong>
+              </span>
+              <span>
+                📦 Objects: <strong>{stats.objectCount}</strong>
+              </span>
+              <span>
+                📚 Arrays: <strong>{stats.arrayCount}</strong>
+              </span>
+            </div>
+          )}
           <TreeView searchQuery={searchQuery} />
         </motion.section>
       </motion.main>
