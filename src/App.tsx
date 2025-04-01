@@ -5,6 +5,7 @@ import Breadcrumb from "./components/Breadcrumb";
 import { JsonValue, useJson } from "./stores/useJsonStore";
 import { useTheme } from "./hooks/useTheme";
 import { handleLoadFromUrl } from "./utils/handleLoadFromUrl";
+import { analyzeJson } from "./utils/analyseJson";
 
 export default function App() {
   const [input, setInput] = useState<string>("");
@@ -14,7 +15,9 @@ export default function App() {
   const [urlInput, setUrlInput] = useState("");
 
   const { theme, toggleTheme } = useTheme();
-  const { setJson } = useJson();
+  const { setJson, json } = useJson();
+
+  const stats = json ? analyzeJson(json) : null;
 
   useEffect(() => {
     const saved = localStorage.getItem("json");
@@ -170,6 +173,23 @@ export default function App() {
               </button>
             </div>
           </motion.section>
+        )}
+
+        {stats && (
+          <div className="max-w-4xl mx-auto text-sm text-gray-600 dark:text-gray-400 mt-4 space-x-4">
+            <span>
+              🧮 Total Keys: <strong>{stats.totalKeys}</strong>
+            </span>
+            <span>
+              📐 Max Depth: <strong>{stats.maxDepth}</strong>
+            </span>
+            <span>
+              📦 Objects: <strong>{stats.objectCount}</strong>
+            </span>
+            <span>
+              📚 Arrays: <strong>{stats.arrayCount}</strong>
+            </span>
+          </div>
         )}
 
         <motion.section
