@@ -134,43 +134,60 @@ export default function App() {
                 placeholder='{"name": "Toto", "age": 42}'
                 className="w-full h-28 p-4 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:border-blue-500"
               />
-              <button
-                onClick={handleLoad}
-                disabled={loading}
-                className={`mt-4 px-6 py-2 rounded font-semibold shadow-md transition-colors text-white ${
-                  loading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700"
-                }`}
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="w-4 h-4 animate-spin"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="white"
-                        strokeWidth="4"
-                        opacity="0.25"
-                      />
-                      <path
-                        d="M22 12a10 10 0 00-10-10"
-                        stroke="white"
-                        strokeWidth="4"
-                        opacity="0.75"
-                      />
-                    </svg>
-                    Loading...
-                  </span>
-                ) : (
-                  "Load JSON"
-                )}
-              </button>
+              <div className="flex gap-4 mt-4">
+                <button
+                  onClick={handleLoad}
+                  disabled={loading}
+                  className={`px-6 py-2 rounded font-semibold shadow-md transition-colors text-white ${
+                    loading
+                      ? "bg-blue-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <svg
+                        className="w-4 h-4 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="white"
+                          strokeWidth="4"
+                          opacity="0.25"
+                        />
+                        <path
+                          d="M22 12a10 10 0 00-10-10"
+                          stroke="white"
+                          strokeWidth="4"
+                          opacity="0.75"
+                        />
+                      </svg>
+                      Loading...
+                    </span>
+                  ) : (
+                    "Load JSON"
+                  )}
+                </button>
+
+                <button
+                  onClick={() => {
+                    try {
+                      const parsed = JSON.parse(input);
+                      const formatted = JSON.stringify(parsed, null, 2);
+                      setInput(formatted);
+                    } catch {
+                      alert("❌ Cannot format: Invalid JSON");
+                    }
+                  }}
+                  className="px-4 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 rounded shadow text-sm text-black dark:text-white"
+                >
+                  Format
+                </button>
+              </div>
             </div>
           </motion.section>
         )}

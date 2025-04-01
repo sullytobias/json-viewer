@@ -25,7 +25,7 @@ export function analyzeJson(data: JsonValue): JsonStats {
       objectCount++;
       for (const key in node) {
         totalKeys++;
-        traverse((node as any)[key], depth + 1);
+        traverse(node[key], depth + 1);
       }
     }
   }
