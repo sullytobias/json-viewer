@@ -1,9 +1,6 @@
+// stores/useJsonStore.ts
 import { Store } from "@tanstack/store";
 import { useSyncExternalStore } from "react";
-
-export interface JsonObject {
-  [key: string]: JsonValue;
-}
 
 export type JsonValue =
   | string
@@ -11,7 +8,7 @@ export type JsonValue =
   | boolean
   | null
   | JsonValue[]
-  | JsonObject;
+  | { [key: string]: JsonValue };
 
 interface JsonStoreState {
   json: JsonValue | null;
@@ -19,8 +16,17 @@ interface JsonStoreState {
   highlightedPath: string;
 }
 
+const initialJson = (() => {
+  const raw = localStorage.getItem("json");
+  try {
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+})();
+
 const jsonStore = new Store<JsonStoreState>({
-  json: null,
+  json: initialJson,
   selectedPath: "",
   highlightedPath: "",
 });
@@ -30,30 +36,23 @@ export const useJson = () => {
     jsonStore.subscribe,
     () => jsonStore.state.json
   );
-
   const selectedPath = useSyncExternalStore(
     jsonStore.subscribe,
     () => jsonStore.state.selectedPath
   );
-
-  const setJson = (newJson: JsonValue) => {
-    jsonStore.setState((prev) => ({
-      ...prev,
-      json: newJson,
-    }));
-  };
-
-  const setSelectedPath = (path: string) => {
-    jsonStore.setState((prev) => ({
-      ...prev,
-      selectedPath: path,
-    }));
-  };
-
   const highlightedPath = useSyncExternalStore(
     jsonStore.subscribe,
     () => jsonStore.state.highlightedPath
   );
+
+  const setJson = (json: JsonValue) => {
+    localStorage.setItem("json", JSON.stringify(json));
+    jsonStore.setState((prev) => ({ ...prev, json }));
+  };
+
+  const setSelectedPath = (path: string) => {
+    jsonStore.setState((prev) => ({ ...prev, selectedPath: path }));
+  };
 
   const setHighlightedPath = (path: string) => {
     jsonStore.setState((prev) => ({ ...prev, highlightedPath: path }));
@@ -61,10 +60,10 @@ export const useJson = () => {
 
   return {
     json,
-    setJson,
     selectedPath,
-    setSelectedPath,
     highlightedPath,
+    setJson,
+    setSelectedPath,
     setHighlightedPath,
   };
 };

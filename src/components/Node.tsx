@@ -160,7 +160,7 @@ export default function Node({
     >
       <button
         onClick={handleOpen}
-        className="flex cursor-pointer items-center gap-2 text-yellow-200 hover:text-yellow-100 focus:outline-none group"
+        className="flex cursor-pointer items-center gap-2 text-black dark:text-yellow-200 hover:text-yellow-100 focus:outline-none group"
       >
         <span
           className={`transform transition-transform duration-200 ${

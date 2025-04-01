@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import TreeView from "./components/TreeView";
 import Breadcrumb from "./components/Breadcrumb";
@@ -15,6 +15,11 @@ export default function App() {
 
   const { theme, toggleTheme } = useTheme();
   const { setJson } = useJson();
+
+  useEffect(() => {
+    const saved = localStorage.getItem("json");
+    if (saved) setInput(saved);
+  }, []);
 
   const handleLoad = () => {
     setLoading(true);
@@ -51,7 +56,7 @@ export default function App() {
               onClick={toggleTheme}
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.05 }}
-              className="text-sm bg-gray-200 dark:bg-gray-800 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 px-4 py-2 rounded shadow flex items-center gap-2"
+              className="text-sm bg-gray-800 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 px-4 py-2 rounded shadow flex items-center gap-2"
             >
               <motion.span
                 initial={{ rotate: 0 }}
