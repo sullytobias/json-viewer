@@ -56,12 +56,12 @@ export default function App() {
     <div className="h-screen flex bg-white text-black dark:bg-gray-950 dark:text-white duration-500 overflow-hidden">
       {view === "tree" && <PinnedSidebar />}
       <div className="flex-1 flex flex-col">
-        <header className="sticky top-0 z-10 px-6 pt-6 pb-2 border-b border-gray-300 dark:border-gray-800 shadow-md bg-white dark:bg-gray-950">
-          <div className="flex justify-between items-center max-w-6xl mx-auto mb-4">
-            <h1 className="text-4xl font-bold text-center flex-1">
+        <header className="sticky top-0 z-10 px-4 sm:px-6 pt-6 pb-2 border-b border-gray-300 dark:border-gray-800 shadow-md bg-white dark:bg-gray-950">
+          <div className="flex flex-wrap justify-between items-center max-w-6xl mx-auto mb-4 gap-2">
+            <h1 className="text-2xl sm:text-4xl font-bold text-center flex-1">
               JSON Viewer
             </h1>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 justify-center">
               <motion.button
                 onClick={toggleTheme}
                 whileTap={{ scale: 0.95 }}
@@ -76,16 +76,14 @@ export default function App() {
                   {theme === "dark" ? "☀️" : "🌙"}
                 </motion.span>
               </motion.button>
-
               {view === "tree" && (
                 <button
                   onClick={() => setShowOnlyTree((prev) => !prev)}
-                  className="text-sm cursor-pointer w-30 bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded shadow"
+                  className="text-sm cursor-pointer bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded shadow"
                 >
                   {showOnlyTree ? "Input" : "Focus"}
                 </button>
               )}
-
               <button
                 onClick={() =>
                   setView((prev) => (prev === "tree" ? "diff" : "tree"))
@@ -96,7 +94,6 @@ export default function App() {
               </button>
             </div>
           </div>
-
           {view === "tree" && <Breadcrumb />}
         </header>
 
@@ -104,45 +101,31 @@ export default function App() {
           <DiffViewer />
         ) : (
           <>
-            <div className="flex justify-between items-center px-6 mt-4">
+            <div className="flex flex-wrap justify-between items-center px-4 sm:px-6 mt-4 gap-2">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search JSON..."
-                className="w-full p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
+                className="flex-1 min-w-0 p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
               />
-              <div className="ml-4 flex gap-2">
-                <button
-                  onClick={triggerExpandAll}
-                  className="px-3 py-1 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                >
-                  Expand All
-                </button>
-                <button
-                  onClick={triggerCollapseAll}
-                  className="px-3 py-1 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                >
-                  Collapse All
-                </button>
-              </div>
             </div>
 
             {!showOnlyTree && (
-              <div className="max-w-4xl mx-auto mt-4 space-y-2">
-                <div className="flex gap-2">
+              <div className="max-w-6xl mx-auto mt-4 w-full px-4 sm:px-6 space-y-2">
+                <div className="flex flex-col sm:flex-row gap-2 w-full">
                   <input
                     type="text"
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
                     placeholder="https://example.com/data.json"
-                    className="w-full p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
+                    className="flex-1 p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
                   />
                   <button
                     onClick={() =>
                       handleLoadFromUrl(urlInput, setLoading, setJson, setInput)
                     }
-                    className="bg-indigo-600 w-80 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow w-full sm:w-auto"
                   >
                     Load from URL
                   </button>
@@ -161,9 +144,9 @@ export default function App() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="overflow-hidden mt-4 px-6 space-y-6 max-h-[30vh] min-h-[30vh] border-b border-gray-300 dark:border-gray-800"
+                  className="overflow-hidden mt-4 px-4 sm:px-6 space-y-6 max-h-[30vh] min-h-[30vh] border-b border-gray-300 dark:border-gray-800"
                 >
-                  <div className="max-w-4xl mx-auto">
+                  <div className="max-w-6xl mx-auto">
                     {error ? (
                       <p className="text-red-500 mb-2">{error}</p>
                     ) : (
@@ -177,18 +160,18 @@ export default function App() {
                       placeholder='{"name": "Toto", "age": 42}'
                       className="w-full h-28 p-4 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-600 rounded-lg text-sm font-mono focus:outline-none focus:border-blue-500"
                     />
-                    <div className="flex gap-4 mt-4">
+                    <div className="flex flex-col sm:flex-row gap-4 mt-4">
                       <button
                         onClick={handleLoad}
                         disabled={loading}
-                        className={`px-6 py-2 rounded font-semibold shadow-md transition-colors text-white ${
+                        className={`px-6 py-2 rounded font-semibold shadow-md transition-colors text-white w-full sm:w-auto ${
                           loading
                             ? "bg-blue-400 cursor-not-allowed"
                             : "bg-blue-600 hover:bg-blue-700"
                         }`}
                       >
                         {loading ? (
-                          <span className="flex items-center gap-2">
+                          <span className="flex items-center gap-2 justify-center">
                             <svg
                               className="w-4 h-4 animate-spin"
                               viewBox="0 0 24 24"
@@ -226,7 +209,7 @@ export default function App() {
                             alert("❌ Cannot format: Invalid JSON");
                           }
                         }}
-                        className="px-4 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 rounded shadow text-sm text-black dark:text-white"
+                        className="px-4 py-2 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 rounded shadow text-sm text-black dark:text-white w-full sm:w-auto"
                       >
                         Format
                       </button>
@@ -235,13 +218,28 @@ export default function App() {
                 </motion.section>
               )}
 
+              <div className="flex gap-2 m-6">
+                <button
+                  onClick={triggerExpandAll}
+                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  Expand All
+                </button>
+                <button
+                  onClick={triggerCollapseAll}
+                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  Collapse All
+                </button>
+              </div>
+
               <motion.section
                 layout
                 transition={{ duration: 0.2 }}
-                className="flex-1 overflow-auto px-6 pb-6"
+                className="flex-1 overflow-auto px-4 sm:px-6 pb-6"
               >
                 {stats && (
-                  <div className="sticky top-0 bg-gray-800 max-w-4xl mx-auto text-center text-sm text-gray-600 dark:text-gray-400 space-x-4 p-2 rounded">
+                  <div className="sticky top-0 bg-gray-800 max-w-6xl mx-auto text-center text-sm text-gray-300 dark:text-gray-400 space-x-4 p-2 rounded">
                     <span>
                       🧮 Total Keys: <strong>{stats.totalKeys}</strong>
                     </span>

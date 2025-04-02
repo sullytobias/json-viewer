@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function PinnedSidebar() {
   const { pinnedPaths, setSelectedPath, setHighlightedPath } = useJson();
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const handleClick = (path: string) => {
     const el = document.getElementById(path);
