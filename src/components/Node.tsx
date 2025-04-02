@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { JsonValue, useJson } from "../stores/useJsonStore";
 import { getValueColor } from "../utils/detectType";
 import { useToast } from "../context/ToastContext";
@@ -19,10 +19,24 @@ export default function Node({
   searchTerm = "",
 }: NodeProps) {
   const [open, setOpen] = useState(true);
-  const { setSelectedPath, highlightedPath } = useJson();
+  const {
+    setSelectedPath,
+    togglePinnedPath,
+    highlightedPath,
+    expandAll,
+    collapseAll,
+  } = useJson();
   const toast = useToast();
 
   const isObject = typeof data === "object" && data !== null;
+
+  useEffect(() => {
+    if (expandAll) setOpen(true);
+  }, [expandAll]);
+
+  useEffect(() => {
+    if (collapseAll) setOpen(false);
+  }, [collapseAll]);
 
   const highlightMatch = (text: string) => {
     if (!searchTerm) return text;
@@ -175,6 +189,17 @@ export default function Node({
         <span className="text-xs text-white">
           ({isArray ? "Array" : "Object"}) [{itemCount}]
         </span>
+      </button>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          togglePinnedPath(path);
+        }}
+        className="text-xs cursor-pointer text-yellow-400 hover:underline "
+        title="Pin Node"
+      >
+        [📌]
       </button>
 
       {open && (
