@@ -9,34 +9,40 @@ export default function TreeView({ searchQuery }: TreeViewProps) {
   const { json } = useJson();
   if (!json) return null;
 
-  const filterJson = (data: JsonValue): JsonValue => {
+  const filterJson = (data: JsonValue): JsonValue | null => {
     if (!searchQuery) return data;
 
+    const lowerSearch = searchQuery.toLowerCase();
+
     if (typeof data === "string") {
-      return data.toLowerCase().includes(searchQuery.toLowerCase())
-        ? data
-        : null;
+      return data.toLowerCase().includes(lowerSearch) ? data : null;
+    }
+
+    if (
+      typeof data === "number" ||
+      typeof data === "boolean" ||
+      data === null
+    ) {
+      return String(data).toLowerCase().includes(lowerSearch) ? data : null;
     }
 
     if (Array.isArray(data)) {
-      const filteredArray = data
-        .map((item) => filterJson(item))
-        .filter((item) => item !== null);
-      return filteredArray.length > 0 ? filteredArray : null;
+      const filtered = data
+        .map(filterJson)
+        .filter((item): item is JsonValue => item !== null);
+      return filtered.length ? filtered : null;
     }
 
-    if (typeof data === "object" && data !== null) {
-      const filteredObject: JsonObject = {};
-      Object.entries(data).forEach(([key, value]) => {
-        const keyMatches = key
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const filteredValue = filterJson(value);
-        if (keyMatches || filteredValue !== null) {
-          filteredObject[key] = filteredValue;
+    if (typeof data === "object") {
+      const result: JsonObject = {};
+      for (const [key, value] of Object.entries(data)) {
+        const keyMatch = key.toLowerCase().includes(lowerSearch);
+        const filtered = filterJson(value);
+        if (keyMatch || filtered !== null) {
+          result[key] = filtered;
         }
-      });
-      return Object.keys(filteredObject).length > 0 ? filteredObject : null;
+      }
+      return Object.keys(result).length ? result : null;
     }
 
     return null;
@@ -51,7 +57,7 @@ export default function TreeView({ searchQuery }: TreeViewProps) {
   }
 
   return (
-    <div className="mt-6 p-4 rounded overflow-auto h-screen">
+    <div className="mt-6 p-4 overflow-auto">
       <Node
         breadcrumbValue="root"
         data={filteredJson}

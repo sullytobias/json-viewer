@@ -19,6 +19,8 @@ export default function Node({
   searchTerm = "",
 }: NodeProps) {
   const [open, setOpen] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+
   const {
     setSelectedPath,
     togglePinnedPath,
@@ -26,24 +28,26 @@ export default function Node({
     expandAll,
     collapseAll,
   } = useJson();
-  const toast = useToast();
 
+  const toast = useToast();
   const isObject = typeof data === "object" && data !== null;
 
   useEffect(() => {
     if (expandAll) setOpen(true);
-  }, [expandAll]);
-
-  useEffect(() => {
     if (collapseAll) setOpen(false);
-  }, [collapseAll]);
+  }, [expandAll, collapseAll]);
+
+  const handleCopy = (text: string, type: "path" | "value") => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast(`✅ ${type === "path" ? "Path" : "Value"} copied!`));
+  };
 
   const highlightMatch = (text: string) => {
     if (!searchTerm) return text;
-    const regex = new RegExp(`(${searchTerm})`, "gi");
-    return text.split(regex).map((part, index) =>
+    return text.split(new RegExp(`(${searchTerm})`, "gi")).map((part, i) =>
       part.toLowerCase() === searchTerm.toLowerCase() ? (
-        <span key={index} className="bg-yellow-500 text-black px-1 rounded">
+        <span key={i} className="bg-yellow-500 text-black px-1 rounded">
           {part}
         </span>
       ) : (
@@ -52,18 +56,6 @@ export default function Node({
     );
   };
 
-  const handleCopy = (text: string, type: "path" | "value") => {
-    navigator.clipboard.writeText(text).then(() => {
-      toast(`✅ ${type === "path" ? "Path" : "Value"} copied!`);
-    });
-  };
-
-  const handleOpen = () => {
-    setOpen(!open);
-    setSelectedPath(breadcrumbValue);
-  };
-
-  const [expanded, setExpanded] = useState(false);
   const MAX_LENGTH = 80;
 
   if (!isObject) {
@@ -79,39 +71,35 @@ export default function Node({
     } else if (typeof data === "string") {
       const isUrl = /^https?:\/\/[^\s]+$/.test(data);
       const isLong = data.length > MAX_LENGTH;
-      const shortText = `${data.slice(0, MAX_LENGTH)}...`;
+      const shortText = data.slice(0, MAX_LENGTH) + "...";
 
-      if (isUrl) {
-        displayValue = (
-          <a
-            href={data}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${valueClass} underline hover:text-blue-400 transition-colors`}
-          >
-            "{data}"
-          </a>
-        );
-      } else {
-        displayValue = (
-          <>
-            <span className={valueClass}>
-              "{expanded || !isLong ? data : shortText}"
-            </span>
-            {isLong && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpanded((prev) => !prev);
-                }}
-                className="ml-2 cursor-pointer text-xs text-yellow-400 underline"
-              >
-                [{expanded ? "Show Less" : "Show More"}]
-              </button>
-            )}
-          </>
-        );
-      }
+      displayValue = isUrl ? (
+        <a
+          href={data}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${valueClass} underline hover:text-blue-400 transition-colors`}
+        >
+          "{data}"
+        </a>
+      ) : (
+        <>
+          <span className={valueClass}>
+            "{expanded || !isLong ? data : shortText}"
+          </span>
+          {isLong && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(!expanded);
+              }}
+              className="ml-2 text-xs text-yellow-400 underline"
+            >
+              [{expanded ? "Show Less" : "Show More"}]
+            </button>
+          )}
+        </>
+      );
     } else {
       displayValue = <span className={valueClass}>{data}</span>;
     }
@@ -119,7 +107,7 @@ export default function Node({
     return (
       <div
         id={breadcrumbValue}
-        className={`pl-6 py-1 flex items-center gap-2 group cursor-pointer transition-colors duration-300 ${
+        className={`pl-6 py-1 flex items-center gap-2 group cursor-pointer ${
           highlightedPath === breadcrumbValue
             ? "bg-yellow-500/10 border-l-4 border-yellow-400"
             : ""
@@ -128,25 +116,21 @@ export default function Node({
       >
         <span className="text-gray-400 italic">{highlightMatch(path)}:</span>
         <span className="font-mono">{displayValue}</span>
-
         <button
           onClick={(e) => {
             e.stopPropagation();
             handleCopy(breadcrumbValue, "path");
           }}
           className="text-xs text-blue-400 opacity-0 group-hover:opacity-100 hover:underline"
-          title="Copy Path"
         >
           [📎 Path]
         </button>
-
         <button
           onClick={(e) => {
             e.stopPropagation();
             handleCopy(JSON.stringify(data), "value");
           }}
           className="text-xs text-teal-400 opacity-0 group-hover:opacity-100 hover:underline"
-          title="Copy Value"
         >
           [📋 Value]
         </button>
@@ -160,12 +144,11 @@ export default function Node({
     : Object.entries(data);
 
   const icon = isArray ? "📑" : "📁";
-  const itemCount = entries.length;
 
   return (
     <div
       id={breadcrumbValue}
-      className={`space-y-1 transition-colors duration-300 ${
+      className={`space-y-1 ${
         highlightedPath === breadcrumbValue
           ? "bg-yellow-500/10 border-l-4 border-yellow-400"
           : ""
@@ -173,13 +156,14 @@ export default function Node({
       style={{ marginLeft: depth * 12 }}
     >
       <button
-        onClick={handleOpen}
-        className="flex cursor-pointer items-center gap-2 text-black dark:text-yellow-200 hover:text-yellow-100 focus:outline-none group"
+        onClick={() => {
+          setOpen(!open);
+          setSelectedPath(breadcrumbValue);
+        }}
+        className="flex items-center gap-2 text-black dark:text-yellow-200 hover:text-yellow-100 focus:outline-none group"
       >
         <span
-          className={`transform transition-transform duration-200 ${
-            open ? "rotate-90" : "rotate-0"
-          }`}
+          className={`transition-transform duration-200 ${open ? "rotate-90" : "rotate-0"}`}
         >
           ▶
         </span>
@@ -187,16 +171,16 @@ export default function Node({
           {icon} {highlightMatch(path)}
         </span>
         <span className="text-xs text-white">
-          ({isArray ? "Array" : "Object"}) [{itemCount}]
+          ({isArray ? "Array" : "Object"}) [{entries.length}]
         </span>
       </button>
 
       <button
         onClick={(e) => {
           e.stopPropagation();
-          togglePinnedPath(path);
+          togglePinnedPath(breadcrumbValue);
         }}
-        className="text-xs cursor-pointer text-yellow-400 hover:underline "
+        className="text-xs text-yellow-400 hover:underline"
         title="Pin Node"
       >
         [📌]
@@ -204,10 +188,10 @@ export default function Node({
 
       {open && (
         <div className="ml-4 pl-3 border-l-2 border-gray-700 space-y-1">
-          {entries.map(([key, value]) => (
+          {entries.map(([key, val]) => (
             <Node
               key={`${breadcrumbValue}.${key}`}
-              data={value as JsonValue}
+              data={val}
               path={String(key)}
               breadcrumbValue={`${breadcrumbValue}.${key}`}
               depth={depth + 1}

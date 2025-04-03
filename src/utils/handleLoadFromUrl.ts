@@ -1,9 +1,11 @@
+import { JsonValue } from "../stores/useJsonStore";
+
 export const handleLoadFromUrl = async (
-  urlInput,
-  setLoading,
-  setJson,
-  setInput
-) => {
+  urlInput: string,
+  setLoading: (loading: boolean) => void,
+  setJson: (json: JsonValue) => void,
+  setInput: (input: string) => void
+): Promise<void> => {
   if (!urlInput) {
     alert("Please enter a URL.");
     return;
@@ -25,9 +27,13 @@ export const handleLoadFromUrl = async (
     const json = await response.json();
     setJson(json);
     setInput(JSON.stringify(json, null, 2));
-  } catch (error: any) {
+  } catch (error: unknown) {
+    let message = "Unknown error occurred";
+
+    if (error instanceof Error) message = error.message;
+
     console.error("Fetch error:", error);
-    alert(`❌ Failed to load JSON: ${error.message}`);
+    alert(`❌ Failed to load JSON: ${message}`);
   } finally {
     setLoading(false);
   }

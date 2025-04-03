@@ -19,7 +19,7 @@ export default function Breadcrumb() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mb-4 px-2 py-2 rounded bg-gray-900 border border-gray-800 shadow-sm text-sm font-mono text-gray-300 overflow-x-auto whitespace-nowrap">
+    <div className="max-w-4xl mx-auto mb-4 px-2 py-2 mt-4 rounded dark:bg-gray-900 border border-gray-800 shadow-sm text-sm font-mono text-gray-300 overflow-x-auto whitespace-nowrap">
       {parts.map((part, i) => {
         return (
           <span key={i} className="inline">
@@ -29,7 +29,7 @@ export default function Breadcrumb() {
               className={`transition cursor-pointer hover:underline hover:text-blue-400 ${
                 i === parts.length - 1
                   ? "text-blue-400 font-semibold"
-                  : "text-gray-300"
+                  : "text-black dark:text-gray-300"
               }`}
             >
               {part}

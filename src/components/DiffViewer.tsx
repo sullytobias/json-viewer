@@ -15,13 +15,13 @@ function isObject(value: unknown): value is Record<string, JsonValue> {
 function diffJsonRecursive(
   a: JsonValue,
   b: JsonValue,
-  path: string = ""
+  path = ""
 ): DiffResult[] {
   const diffs: DiffResult[] = [];
 
   if (isObject(a) && isObject(b)) {
     const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
-    keys.forEach((key) => {
+    for (const key of keys) {
       const currentPath = path ? `${path}.${key}` : key;
       const valA = a[key];
       const valB = b[key];
@@ -33,7 +33,7 @@ function diffJsonRecursive(
       } else {
         diffs.push(...diffJsonRecursive(valA, valB, currentPath));
       }
-    });
+    }
   } else if (JSON.stringify(a) !== JSON.stringify(b)) {
     diffs.push({ type: "changed", path, oldValue: a, newValue: b });
   }
@@ -42,8 +42,8 @@ function diffJsonRecursive(
 }
 
 export default function DiffViewer() {
-  const [jsonA, setJsonA] = useState<string>("");
-  const [jsonB, setJsonB] = useState<string>("");
+  const [jsonA, setJsonA] = useState("");
+  const [jsonB, setJsonB] = useState("");
   const [diff, setDiff] = useState<DiffResult[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,8 +51,7 @@ export default function DiffViewer() {
     try {
       const a: JsonValue = JSON.parse(jsonA);
       const b: JsonValue = JSON.parse(jsonB);
-      const result = diffJsonRecursive(a, b);
-      setDiff(result);
+      setDiff(diffJsonRecursive(a, b));
       setError(null);
     } catch {
       setError("❌ Invalid JSON in one of the inputs");
@@ -60,48 +59,49 @@ export default function DiffViewer() {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto w-full">
       <h1 className="text-2xl font-bold text-center">Diff Two JSONs</h1>
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <textarea
-          value={jsonA}
-          onChange={(e) => setJsonA(e.target.value)}
-          placeholder="JSON A"
-          className="w-full h-64 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded font-mono text-sm"
-        />
-        <textarea
-          value={jsonB}
-          onChange={(e) => setJsonB(e.target.value)}
-          placeholder="JSON B"
-          className="w-full h-64 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded font-mono text-sm"
-        />
+        {[jsonA, jsonB].map((_, i) => (
+          <textarea
+            key={i}
+            value={i === 0 ? jsonA : jsonB}
+            onChange={(e) =>
+              i === 0 ? setJsonA(e.target.value) : setJsonB(e.target.value)
+            }
+            placeholder={`JSON ${i === 0 ? "A" : "B"}`}
+            className="h-64 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded text-sm font-mono w-full resize-none focus:outline-none focus:border-blue-500"
+          />
+        ))}
       </div>
+
       <button
         onClick={handleCompare}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow"
+        className="block mx-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow text-sm font-semibold"
       >
         Compare
       </button>
-      <div className="mt-6 space-y-2">
+
+      <div className="mt-4 space-y-1 text-sm font-mono">
         {diff.map((item, index) => (
-          <div key={index} className="text-sm font-mono">
-            {item.type === "added" && (
-              <div className="text-green-400">
-                + {item.path}: {JSON.stringify(item.value)}
-              </div>
-            )}
-            {item.type === "removed" && (
-              <div className="text-red-400">
-                - {item.path}: {JSON.stringify(item.value)}
-              </div>
-            )}
-            {item.type === "changed" && (
-              <div className="text-yellow-400">
-                ~ {item.path}: {JSON.stringify(item.oldValue)} →{" "}
-                {JSON.stringify(item.newValue)}
-              </div>
-            )}
+          <div
+            key={index}
+            className={
+              item.type === "added"
+                ? "text-green-500"
+                : item.type === "removed"
+                  ? "text-red-500"
+                  : "text-yellow-500"
+            }
+          >
+            {item.type === "added" &&
+              `+ ${item.path}: ${JSON.stringify(item.value)}`}
+            {item.type === "removed" &&
+              `- ${item.path}: ${JSON.stringify(item.value)}`}
+            {item.type === "changed" &&
+              `~ ${item.path}: ${JSON.stringify(item.oldValue)} → ${JSON.stringify(item.newValue)}`}
           </div>
         ))}
       </div>
