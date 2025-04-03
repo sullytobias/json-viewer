@@ -52,7 +52,7 @@ export default function App() {
   const error = input.length > 0 && !isValidJson ? "Invalid JSON" : null;
 
   return (
-    <div className="h-screen w-screen flex flex-col md:flex-row bg-white text-black dark:bg-gray-950 dark:text-white overflow-hidden">
+    <div className="min-h-screen sm:h-screen flex flex-col md:flex-row bg-white text-black dark:bg-gray-950 dark:text-white overflow-hidden">
       {view === "tree" && <PinnedSidebar />}
 
       <div className="flex-1 flex flex-col">
@@ -105,7 +105,7 @@ export default function App() {
           <DiffViewer />
         ) : (
           <>
-            <div className="flex flex-wrap justify-between items-center px-4 sm:px-6 mt-4 gap-2">
+            <div className="flex sm:min-w-2xl mx-auto px-4 sm:px-6 mt-4 gap-2">
               <input
                 type="text"
                 value={searchQuery}
@@ -139,7 +139,7 @@ export default function App() {
 
             <motion.main
               layout
-              className="flex-1 overflow-hidden flex flex-col"
+              className="flex-1 flex flex-col overflow-hidden"
             >
               {!showOnlyTree && (
                 <motion.section
@@ -148,7 +148,7 @@ export default function App() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="overflow-hidden mt-4 px-4 sm:px-6 space-y-6 max-h-[30vh] min-h-[30vh] border-b border-gray-300 dark:border-gray-800"
+                  className="mt-4 px-4 sm:px-6 space-y-6 max-h-[30vh] min-h-[30vh] border-b border-gray-300 dark:border-gray-800"
                 >
                   <div className="max-w-6xl mx-auto">
                     {error && <p className="text-red-500 mb-2">{error}</p>}
@@ -233,36 +233,28 @@ export default function App() {
                   Collapse All
                 </button>
               </div>
-
+              {stats && (
+                <div className="sticky top-0 bg-gray-200 dark:bg-gray-800 max-w-7xl mx-auto text-center text-sm text-black dark:text-gray-400 space-x-4 p-2 rounded z-10">
+                  <span>
+                    🧮 Total Keys: <strong>{stats.totalKeys}</strong>
+                  </span>
+                  <span>
+                    📐 Max Depth: <strong>{stats.maxDepth}</strong>
+                  </span>
+                  <span>
+                    📦 Objects: <strong>{stats.objectCount}</strong>
+                  </span>
+                  <span>
+                    📚 Arrays: <strong>{stats.arrayCount}</strong>
+                  </span>
+                </div>
+              )}
               <motion.section
                 layout
                 transition={{ duration: 0.2 }}
-                className="flex-1 overflow-auto px-4 sm:px-6 pb-6"
+                className="flex-1 px-4 sm:px-6 pb-6 overflow-y-auto"
               >
-                {stats && (
-                  <div className="sticky top-0 bg-gray-200 dark:bg-gray-800 max-w-7xl mx-auto text-center text-sm text-black dark:text-gray-400 space-x-4 p-2 rounded z-10">
-                    <span>
-                      🧮 Total Keys: <strong>{stats.totalKeys}</strong>
-                    </span>
-                    <span>
-                      📐 Max Depth: <strong>{stats.maxDepth}</strong>
-                    </span>
-                    <span>
-                      📦 Objects: <strong>{stats.objectCount}</strong>
-                    </span>
-                    <span>
-                      📚 Arrays: <strong>{stats.arrayCount}</strong>
-                    </span>
-                  </div>
-                )}
-
-                <div className="max-w-7xl mx-auto">
-                  <div className="overflow-x-auto">
-                    <div className="min-w-full sm:min-w-0">
-                      <TreeView searchQuery={searchQuery} />
-                    </div>
-                  </div>
-                </div>
+                <TreeView searchQuery={searchQuery} />
               </motion.section>
             </motion.main>
           </>

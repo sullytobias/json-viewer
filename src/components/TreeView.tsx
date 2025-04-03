@@ -57,7 +57,7 @@ export default function TreeView({ searchQuery }: TreeViewProps) {
   }
 
   return (
-    <div className="mt-6 p-4 overflow-auto">
+    <div className="mt-6 p-4">
       <Node
         breadcrumbValue="root"
         data={filteredJson}
