@@ -39,4 +39,4 @@ jobs:
           git commit -m "Deploy to gh-pages"
 
           # Push to gh-pages branch using the PAT
-          git push --force "https://${{ secrets.GH_TOKEN }}@github.com/sullytobias/timing-game.git" HEAD:gh-pages
+          git push --force "https://${{ secrets.GH_TOKEN }}@github.com/sullytobias/json-viewer.git" HEAD:gh-pages
