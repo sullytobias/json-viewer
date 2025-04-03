@@ -1,4 +1,4 @@
-import { JsonObject, JsonValue, useJson } from "../stores/useJsonStore";
+import { JsonValue, JsonObject, useJson } from "../stores/useJsonStore";
 import Node from "./Node";
 
 interface TreeViewProps {
@@ -51,7 +51,7 @@ export default function TreeView({ searchQuery }: TreeViewProps) {
   }
 
   return (
-    <div className="mt-6 p-4 rounded overflow-x-auto">
+    <div className="mt-6 p-4 rounded overflow-auto h-screen">
       <Node
         breadcrumbValue="root"
         data={filteredJson}

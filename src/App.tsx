@@ -53,20 +53,22 @@ export default function App() {
   const error = input.length > 0 && !isValidJson ? "Invalid JSON" : null;
 
   return (
-    <div className="h-screen flex bg-white text-black dark:bg-gray-950 dark:text-white duration-500 overflow-hidden">
+    <div className="h-screen w-screen flex flex-col md:flex-row bg-white text-black dark:bg-gray-950 dark:text-white overflow-x-hidden overflow-y-auto">
       {view === "tree" && <PinnedSidebar />}
-      <div className="flex-1 flex flex-col">
-        <header className="sticky top-0 z-10 px-4 sm:px-6 pt-6 pb-2 border-b border-gray-300 dark:border-gray-800 shadow-md bg-white dark:bg-gray-950">
-          <div className="flex flex-wrap justify-between items-center max-w-6xl mx-auto mb-4 gap-2">
-            <h1 className="text-2xl sm:text-4xl font-bold text-center flex-1">
+
+      <div className="flex-1 flex flex-col w-full max-w-full">
+        <header className="sticky top-0 z-20 w-full border-b border-gray-300 dark:border-gray-800 shadow-md bg-white dark:bg-gray-950 px-4 sm:px-6 pt-4 pb-3">
+          <div className="max-w-screen-lg w-full mx-auto flex flex-wrap gap-3 items-center justify-between">
+            <h1 className="text-2xl sm:text-4xl font-bold text-center sm:text-left w-full sm:w-auto flex-1">
               JSON Viewer
             </h1>
-            <div className="flex flex-wrap gap-2 justify-center">
+
+            <div className="w-full sm:w-auto flex flex-wrap justify-center sm:justify-end gap-2">
               <motion.button
                 onClick={toggleTheme}
                 whileTap={{ scale: 0.95 }}
                 whileHover={{ scale: 1.05 }}
-                className="text-sm bg-gray-800 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 px-4 py-2 rounded shadow flex items-center gap-2"
+                className="text-sm bg-gray-800 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 px-4 py-2 rounded shadow flex items-center gap-2 w-auto"
               >
                 <motion.span
                   initial={{ rotate: 0 }}
@@ -76,24 +78,27 @@ export default function App() {
                   {theme === "dark" ? "☀️" : "🌙"}
                 </motion.span>
               </motion.button>
+
               {view === "tree" && (
                 <button
                   onClick={() => setShowOnlyTree((prev) => !prev)}
-                  className="text-sm cursor-pointer bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded shadow"
+                  className="text-sm bg-yellow-600 text-white cursor-pointer hover:bg-yellow-700 px-4 py-2 rounded shadow w-auto"
                 >
                   {showOnlyTree ? "Input" : "Focus"}
                 </button>
               )}
+
               <button
                 onClick={() =>
                   setView((prev) => (prev === "tree" ? "diff" : "tree"))
                 }
-                className="text-sm cursor-pointer bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded shadow"
+                className="text-sm bg-indigo-600 text-white cursor-pointer hover:bg-indigo-700 px-4 py-2 rounded shadow w-auto"
               >
                 {view === "tree" ? "🔍 Diff View" : "🌳 Tree View"}
               </button>
             </div>
           </div>
+
           {view === "tree" && <Breadcrumb />}
         </header>
 
@@ -107,7 +112,7 @@ export default function App() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search JSON..."
-                className="flex-1 min-w-0 p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
+                className="flex-1 max-w-2xl mx-auto p-2 text-black dark:text-white bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -218,7 +223,7 @@ export default function App() {
                 </motion.section>
               )}
 
-              <div className="flex gap-2 m-6">
+              <div className="flex flex-wrap gap-2 m-6">
                 <button
                   onClick={triggerExpandAll}
                   className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
@@ -239,7 +244,7 @@ export default function App() {
                 className="flex-1 overflow-auto px-4 sm:px-6 pb-6"
               >
                 {stats && (
-                  <div className="sticky top-0 bg-gray-800 max-w-6xl mx-auto text-center text-sm text-gray-300 dark:text-gray-400 space-x-4 p-2 rounded">
+                  <div className="sticky top-0 bg-gray-200 dark:bg-gray-800 max-w-7xl mx-auto text-center text-sm text-black-300 dark:text-gray-400 space-x-4 p-2 rounded z-10">
                     <span>
                       🧮 Total Keys: <strong>{stats.totalKeys}</strong>
                     </span>
@@ -254,6 +259,7 @@ export default function App() {
                     </span>
                   </div>
                 )}
+
                 <TreeView searchQuery={searchQuery} />
               </motion.section>
             </motion.main>
